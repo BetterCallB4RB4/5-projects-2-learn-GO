@@ -1,14 +1,14 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/spf13/cobra"
 )
 
+// global variable
 // addCmd represents the add command
 var addCmd = &cobra.Command{
 	Use:   "add",
@@ -20,20 +20,30 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		fmt.Println("adding task")
+		addTask(args[0])
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(addCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func addTask(task string) {
+	var record [4]string
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// addCmd.PersistentFlags().String("foo", "", "A help for foo")
+	record[0] = strconv.Itoa(getLastIndex())
+	record[1] = task
+	record[2] = time.Now().String()
+	record[3] = strconv.FormatBool(false)
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// addCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	writer, _, err := createCsvWriter("tasks.csv")
+	if err != nil {
+		fmt.Println("Error happend on create record", err)
+	}
+	createCsvRecord(writer, record[:])
+}
+
+func getLastIndex() int {
+	return 0
 }
