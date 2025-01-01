@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -49,6 +50,7 @@ func createCsvWriter(filename string) (*csv.Writer, *os.File, error) {
 		return nil, nil, err
 	}
 	writer := csv.NewWriter(file)
+	defer writer.Flush()
 	return writer, file, nil
 }
 
@@ -58,4 +60,28 @@ func createCsvRecord(writer *csv.Writer, record []string) {
 		fmt.Println("Error on writing record", err)
 	}
 	writer.Flush()
+}
+
+func addCsvRecord(record []string) error {
+	filename := "task.csv"
+
+	if _, err := os.Stat(filename); err == nil {
+		file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
+		if err != nil {
+			return err
+		}
+	} else if errors.Is(err, os.ErrNotExist) {
+		_, err := os.Create(filename)
+		if err != nil {
+			return err
+		}
+		file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
+		if err != nil {
+			return err
+		}
+	}
+
+	defer writer.Flush()
+
+	defer file.Close()
 }
