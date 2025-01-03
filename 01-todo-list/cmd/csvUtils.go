@@ -64,24 +64,15 @@ func createCsvRecord(writer *csv.Writer, record []string) {
 
 func addCsvRecord(record []string) error {
 	filename := "task.csv"
-
-	if _, err := os.Stat(filename); err == nil {
-		file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
-		if err != nil {
-			return err
-		}
-	} else if errors.Is(err, os.ErrNotExist) {
-		_, err := os.Create(filename)
-		if err != nil {
-			return err
-		}
-		file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
-		if err != nil {
-			return err
-		}
+	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
+	if err != nil {
+		return err
 	}
 
+	writer := csv.NewWriter(file)
 	defer writer.Flush()
-
 	defer file.Close()
+
+	err = writer.Write(record)
+	return err
 }

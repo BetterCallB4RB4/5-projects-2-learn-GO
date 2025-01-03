@@ -37,11 +37,7 @@ func addTask(task string) {
 	record[2] = time.Now().String()
 	record[3] = strconv.FormatBool(false)
 
-	writer, _, err := createCsvWriter("tasks.csv")
-	if err != nil {
-		fmt.Println("Error happend on create record", err)
-	}
-	createCsvRecord(writer, record[:])
+	addCsvRecord(record[:])
 }
 
 func getLastIndex() int {
