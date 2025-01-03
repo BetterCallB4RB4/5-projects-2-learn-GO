@@ -7,72 +7,93 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 )
 
-// ##### READER #####
-
-func readCsvFile(filename string) ([]byte, error) {
-	file, err := os.OpenFile(filename, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+func createCsvReader(filename string) *csv.Reader {
+	// open file
+	file, err := os.Open(filename)
 	if err != nil {
-		return nil, err
+		fmt.Println("Error:", err)
+		os.Exit(1)
 	}
 	defer file.Close()
+
 	data, err := io.ReadAll(file)
 	if err != nil {
-		return nil, err
+		fmt.Println("Error:", err)
+		os.Exit(1)
 	}
-	return data, nil
-}
 
-func csvParser(data []byte) (*csv.Reader, error) {
+	// start reading the file and
 	reader := csv.NewReader(bytes.NewReader(data))
-	return reader, nil
+	return reader
 }
 
-func processCsv(reader *csv.Reader) {
+func getLastID(filename string) (lastID int) {
+	// open file
+	file, err := os.Open(filename)
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	data, err := io.ReadAll(file)
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+
+	// start reading the file and
+	reader := csv.NewReader(bytes.NewReader(data))
+
+	var lastRecord []string
 	for {
 		record, err := reader.Read()
 		if err == io.EOF {
 			break
-		} else if err != nil {
-			fmt.Println("Error caused reading csv line", err)
-			break
 		}
-		fmt.Println(record)
+		lastRecord = record
 	}
-}
 
-// ##### WRITER #####
-
-func createCsvWriter(filename string) (*csv.Writer, *os.File, error) {
-	file, err := os.Create(filename)
+	value, err := strconv.Atoi(lastRecord[0])
 	if err != nil {
-		return nil, nil, err
+		return 0
 	}
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
-	return writer, file, nil
+	return value
 }
 
-func createCsvRecord(writer *csv.Writer, record []string) {
-	err := writer.Write(record)
-	if err != nil {
-		fmt.Println("Error on writing record", err)
+func initCsvFile(filename string) {
+	if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
+		// init new csv file
+		header := []string{"ID", "Task", "Created", "Done"}
+		file, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0o644)
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
+		writer := csv.NewWriter(file)
+		err = writer.Write(header)
+		if err != nil {
+			fmt.Println("Error:", err)
+			os.Exit(1)
+		}
+		writer.Flush()
 	}
-	writer.Flush()
 }
 
-func addCsvRecord(record []string) error {
-	filename := "task.csv"
+func addCsvRecord(filename string, record []string) {
+	// create file in appens mode
 	file, err := os.OpenFile(filename, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o600)
 	if err != nil {
-		return err
+		fmt.Println("Error:", err)
+		os.Exit(1)
 	}
-
-	writer := csv.NewWriter(file)
-	defer writer.Flush()
 	defer file.Close()
 
+	// create a csv writer and write the input record
+	writer := csv.NewWriter(file)
 	err = writer.Write(record)
-	return err
+	writer.Flush()
 }
