@@ -20,26 +20,31 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("adding task")
-		addTask(args[0])
+		addTask(fileName, args[0])
+		fmt.Println("adding task: " + args[0])
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(addCmd)
+
+	// Here you will define your flags and configuration settings.
+
+	// Cobra supports Persistent Flags which will work for this command
+	// and all subcommands, e.g.:
+	// listCmd.PersistentFlags().String("foo", "", "A help for foo")
+
+	// Cobra supports local flags which will only run when this command
+	// is called directly, e.g.:
+	// listCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-func addTask(task string) {
-	var record [4]string
+func addTask(filename string, taskName string) {
+	var task [4]string
+	task[0] = strconv.Itoa(getLastID(fileName) + 1)
+	task[1] = taskName
+	task[2] = time.Now().Format(time.RFC3339)
+	task[3] = strconv.FormatBool(false)
 
-	record[0] = strconv.Itoa(getLastIndex())
-	record[1] = task
-	record[2] = time.Now().String()
-	record[3] = strconv.FormatBool(false)
-
-	addCsvRecord(record[:])
-}
-
-func getLastIndex() int {
-	return 0
+	addCsvRecord(filename, task[:])
 }
