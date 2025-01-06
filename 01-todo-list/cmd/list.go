@@ -46,7 +46,20 @@ func init() {
 func printFormatterTaskList() {
 	tabFilter := tabwriter.NewWriter(os.Stdout, 0, 0, 1, '.', tabwriter.AlignRight|tabwriter.Debug)
 	reader := createCsvReader(fileName)
+
+	isHeader := false
 	for {
+		if !isHeader {
+			header, err := reader.Read()
+			if err != nil {
+				fmt.Println("Error:", err)
+				os.Exit(1)
+			}
+			isHeader = true
+			fmt.Fprintln(tabFilter, header[0]+"\t"+header[1]+"\t"+header[2]+"\t"+header[3]+"\t")
+
+		}
+
 		record, err := reader.Read()
 		if err == io.EOF {
 			break
