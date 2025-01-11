@@ -108,7 +108,47 @@ func addCsvRecord(filename string, record []string) {
 	writer.Flush()
 }
 
-func getCsvData() (csvData []Record) {
+func morphRecordToString(records []Record) [][]string {
+	var stringRecord [][]string
+	for _, record := range records {
+		record := []string{
+			strconv.Itoa(record.id),
+			record.task,
+			record.age,
+			strconv.FormatBool(record.done),
+		}
+		stringRecord = append(stringRecord, record)
+	}
+	return stringRecord
+}
+
+func writeCsv(records []Record) {
+	// create a new empty file
+	file, err := os.Open(fileName)
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+	defer file.Close()
+
+	// prepare the writer
+	writer := csv.NewWriter(file)
+
+	// init the file by writing the header
+	header := []string{"ID", "Task", "Created", "Done"}
+	err = writer.Write(header)
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+
+	stringRecords := morphRecordToString(records)
+	writer.WriteAll(stringRecords)
+
+	writer.Flush()
+}
+
+func getCsvData() []Record {
 	reader := createCsvReader(fileName)
 	records, err := reader.ReadAll()
 	if err != nil {
