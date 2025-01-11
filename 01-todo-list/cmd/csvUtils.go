@@ -10,6 +10,13 @@ import (
 	"strconv"
 )
 
+type Record struct {
+	id   int
+	task string
+	age  string
+	done bool
+}
+
 func createCsvReader(filename string) *csv.Reader {
 	// open file
 	file, err := os.Open(filename)
@@ -95,5 +102,73 @@ func addCsvRecord(filename string, record []string) {
 	// create a csv writer and write the input record
 	writer := csv.NewWriter(file)
 	err = writer.Write(record)
+	if err != nil {
+		return
+	}
 	writer.Flush()
+}
+
+func getCsvData() (csvData []Record) {
+	reader := createCsvReader(fileName)
+	records, err := reader.ReadAll()
+	if err != nil {
+		return nil
+	}
+	var data []Record
+	for i, record := range records {
+		if i == 0 {
+			continue
+		}
+		intId, err := strconv.Atoi(record[0])
+		if err != nil {
+			return nil
+		}
+		boolDone, err := strconv.ParseBool(record[3])
+		if err != nil {
+			return nil
+		}
+		data = append(data, Record{
+			id:   intId,
+			task: record[1],
+			age:  record[1],
+			done: boolDone,
+		})
+	}
+	return data
+}
+
+func getIdList() (ids []int) {
+	records := getCsvData()
+	var idList []int
+	for _, record := range records {
+		idList = append(idList, record.id)
+	}
+	return idList
+}
+
+func getTaskList() (tasks []string) {
+	records := getCsvData()
+	var taskList []string
+	for _, record := range records {
+		taskList = append(taskList, record.task)
+	}
+	return taskList
+}
+
+func getAgeList() (ages []string) {
+	records := getCsvData()
+	var ageList []string
+	for _, record := range records {
+		ageList = append(ageList, record.age)
+	}
+	return ageList
+}
+
+func getDoneList() (done []bool) {
+	records := getCsvData()
+	var doneList []bool
+	for _, record := range records {
+		doneList = append(doneList, record.done)
+	}
+	return doneList
 }
