@@ -1,3 +1,15 @@
+# Why Learning Go(4fun) in This AI-Driven World
+
+Despite what NVIDIA CEO says, coding is **FUN**.  
+When you're at work, at least for me, I'm building a tool for somebody to solve a problem, or we were both working on a singular problem where I took side A, and they took side B, but you never actually worked on the same thing together.  
+It never gave you the sense of camaraderie that I would get when I was in school, where I liked to fight my way through it.
+
+In school, you have problems that get presented to 20 people, 50 people; all have to solve the same problem themselves, and it allows me to kind of like talk through and think through a problem that may be hard for me with a bunch of people all at the same time.  
+There's really not another time in life when this happens.  
+That's why I want to learn Go :D
+
+And there's no better way to learn than getting your hands dirty with little projects.
+
 # Five Go Projects
 
 This repository contains readmes for five different Go projects you can use to learn Go, as
