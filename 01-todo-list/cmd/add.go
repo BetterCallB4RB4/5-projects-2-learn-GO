@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -40,11 +39,13 @@ func init() {
 }
 
 func addTask(filename string, taskName string) {
-	var task [4]string
-	task[0] = strconv.Itoa(getLastID(fileName) + 1)
-	task[1] = taskName
-	task[2] = time.Now().Format(time.RFC3339)
-	task[3] = strconv.FormatBool(false)
-
-	addCsvRecord(filename, task[:])
+	records := getCsvData()
+	record := Record{
+		id:   getLastID() + 1,
+		task: taskName,
+		age:  time.Now(),
+		done: false,
+	}
+	records = append(records, record)
+	writeCsv(records)
 }
