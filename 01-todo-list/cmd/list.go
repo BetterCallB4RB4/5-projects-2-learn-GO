@@ -44,7 +44,15 @@ func init() {
 }
 
 func printFormatterTaskList() {
-	tabFilter := tabwriter.NewWriter(os.Stdout, 0, 0, 1, '.', tabwriter.AlignRight|tabwriter.Debug)
+	var maxLen int
+	for _, task := range getTaskList() {
+		lenght := len(task)
+		if lenght > maxLen {
+			maxLen = lenght
+		}
+	}
+
+	tabFilter := tabwriter.NewWriter(os.Stdout, maxLen+5, 8, 1, ' ', 0)
 	reader := createCsvReader(fileName)
 
 	isHeader := false
@@ -77,7 +85,7 @@ func printFormatterTaskList() {
 		}
 		timeDiff := timediff.TimeDiff(timeDate)
 
-		fmt.Fprintln(tabFilter, id+"\t"+taskName+"\t"+timeDiff+"\t"+isDone+"\t")
+		fmt.Fprintln(tabFilter, id+"\t"+taskName+"\t"+timeDiff+"\t"+isDone)
 
 		tabFilter.Flush()
 	}
