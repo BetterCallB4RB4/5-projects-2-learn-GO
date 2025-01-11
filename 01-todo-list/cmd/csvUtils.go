@@ -8,12 +8,13 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"time"
 )
 
 type Record struct {
 	id   int
 	task string
-	age  string
+	age  time.Time
 	done bool
 }
 
@@ -37,9 +38,9 @@ func createCsvReader(filename string) *csv.Reader {
 	return reader
 }
 
-func getLastID(filename string) (lastID int) {
+func getLastID() (lastID int) {
 	// open file
-	file, err := os.Open(filename)
+	file, err := os.Open(fileName)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
@@ -114,7 +115,7 @@ func morphRecordToString(records []Record) [][]string {
 		record := []string{
 			strconv.Itoa(record.id),
 			record.task,
-			record.age,
+			record.age.Format(time.RFC3339),
 			strconv.FormatBool(record.done),
 		}
 		stringRecord = append(stringRecord, record)
@@ -124,7 +125,7 @@ func morphRecordToString(records []Record) [][]string {
 
 func writeCsv(records []Record) {
 	// create a new empty file
-	file, err := os.Open(fileName)
+	file, err := os.Create(fileName)
 	if err != nil {
 		fmt.Println("Error:", err)
 		os.Exit(1)
@@ -159,18 +160,26 @@ func getCsvData() []Record {
 		if i == 0 {
 			continue
 		}
+
 		intId, err := strconv.Atoi(record[0])
 		if err != nil {
 			return nil
 		}
+
+		time, err := time.Parse(time.RFC3339, record[2])
+		if err != nil {
+			return nil
+		}
+
 		boolDone, err := strconv.ParseBool(record[3])
 		if err != nil {
 			return nil
 		}
+
 		data = append(data, Record{
 			id:   intId,
 			task: record[1],
-			age:  record[1],
+			age:  time,
 			done: boolDone,
 		})
 	}
@@ -195,14 +204,14 @@ func getTaskList() (tasks []string) {
 	return taskList
 }
 
-func getAgeList() (ages []string) {
-	records := getCsvData()
-	var ageList []string
-	for _, record := range records {
-		ageList = append(ageList, record.age)
-	}
-	return ageList
-}
+// func getAgeList() (ages []string) {
+// 	records := getCsvData()
+// 	var ageList []string
+// 	for _, record := range records {
+// 		ageList = append(ageList, record.age)
+// 	}
+// 	return ageList
+// }
 
 func getDoneList() (done []bool) {
 	records := getCsvData()
