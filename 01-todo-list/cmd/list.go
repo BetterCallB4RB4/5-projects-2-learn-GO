@@ -51,26 +51,21 @@ func printFormatterTaskList() {
 			maxLen = lenght
 		}
 	}
-	for _, task := range getAgeList() {
-		lenght := len(task)
-		if lenght > maxLen {
-			maxLen = lenght
-		}
-	}
 
-	tabFilter := tabwriter.NewWriter(os.Stdout, maxLen+5, 8, 1, ' ', 0)
+	tabFilter := tabwriter.NewWriter(os.Stdout, maxLen+10, 8, 1, ' ', 0)
 	reader := createCsvReader(fileName)
 
 	isHeader := false
 	for {
 		if !isHeader {
+			fmt.Println()
 			header, err := reader.Read()
 			if err != nil {
 				fmt.Println("Error:", err)
 				os.Exit(1)
 			}
 			isHeader = true
-			fmt.Fprintln(tabFilter, header[0]+"\t"+header[1]+"\t"+header[2]+"\t"+header[3]+"\t")
+			fmt.Fprintln(tabFilter, header[0]+"\t"+header[1]+"\t"+header[2]+"\t"+header[3]+"\n")
 
 		}
 
