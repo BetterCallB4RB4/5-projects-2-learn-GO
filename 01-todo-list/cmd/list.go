@@ -51,6 +51,12 @@ func printFormatterTaskList() {
 			maxLen = lenght
 		}
 	}
+	for _, task := range getAgeList() {
+		lenght := len(task)
+		if lenght > maxLen {
+			maxLen = lenght
+		}
+	}
 
 	tabFilter := tabwriter.NewWriter(os.Stdout, maxLen+5, 8, 1, ' ', 0)
 	reader := createCsvReader(fileName)
