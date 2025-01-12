@@ -22,27 +22,29 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// taskFlagOn, _ := cmd.Flags().GetString("task")
-		// if taskFlagOn != "" {
-		// 	taskId, err := strconv.Atoi(args[0])
-		// 	if err != nil {
-		// 		fmt.Println("Error:", err)
-		// 		os.Exit(1)
-		// 	}
-		// 	checkTaskByID(taskId)
-		// 	if err != nil {
-		// 		fmt.Println("Error:", err)
-		// 		os.Exit(1)
-		// 	}
-		// } else {
-		// }
+		taskName, _ := cmd.Flags().GetString("task")
+		if taskName != "" {
+			// Call the function to check a task by name
+			checkTaskByString(taskName)
+			return
+		}
 
-		taskId, err := strconv.Atoi(args[0])
-		if err != nil {
-			fmt.Println("Error:", err)
+		// If no --task flag, expect an integer argument
+		if len(args) == 0 {
+			fmt.Println("Error: You must provide a task ID or use the --task flag.")
 			os.Exit(1)
 		}
-		checkTaskByID(taskId)
+
+		// Parse the task ID from the argument
+		taskID, err := strconv.Atoi(args[0])
+		if err != nil {
+			fmt.Printf("Error: Invalid task ID '%s'. Please provide a valid integer.\n", args[0])
+			os.Exit(1)
+		}
+
+		// Call the function to check a task by ID
+		checkTaskByID(taskID)
+		fmt.Printf("Task with ID %d marked as done.\n", taskID)
 	},
 }
 
@@ -59,7 +61,8 @@ func init() {
 	// is called directly, e.g.:
 	// checkCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-	checkCmd.PersistentFlags().String("task", "t", "select a task by the name")
+	// checkCmd.PersistentFlags().String("task", "", "select a task by the name")
+	checkCmd.Flags().StringP("task", "t", "", "check a task by his name")
 }
 
 func checkTaskByID(taskId int) {
