@@ -21,7 +21,7 @@ This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("remove called")
-		fmt.Println("\033[9mThis is a strikethrough text\033[0m")
+		remevoCheckedTask()
 	},
 }
 
@@ -37,4 +37,17 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// removeCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+}
+
+func remevoCheckedTask() {
+	var uncompleteRecord []Record
+	for _, record := range getCsvData() {
+		if !record.done {
+			uncompleteRecord = append(uncompleteRecord, record)
+		}
+	}
+	for i := range uncompleteRecord {
+		uncompleteRecord[i].id = i + 1
+	}
+	writeCsv(uncompleteRecord)
 }
