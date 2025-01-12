@@ -1,3 +1,5 @@
+# WIP
+
 # 05 - Currency Converter
 
 The goal of this project is to create a currency converter TUI application.
