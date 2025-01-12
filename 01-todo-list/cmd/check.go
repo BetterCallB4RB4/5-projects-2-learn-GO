@@ -1,6 +1,3 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -14,18 +11,30 @@ import (
 // checkCmd represents the check command
 var checkCmd = &cobra.Command{
 	Use:   "check",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Mark a task as completed by ID or name",
+	Long: `The check command allows you to mark a task as completed either by providing the task ID 
+or by using the task name with the --task flag.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+If you provide a task ID as a positional argument, the task corresponding to that ID will be marked as done.
+Alternatively, you can use the --task flag to specify the task by its name, and it will be marked as done.
+
+Examples:
+  todo-list check 1
+  This command will mark the task with ID 1 as completed.
+
+  todo-list check --task "Buy groceries"
+  This command will mark the task with the name "Buy groceries" as completed.
+
+This is helpful for tracking and managing your tasks in the to-do list.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		taskName, _ := cmd.Flags().GetString("task")
 		if taskName != "" {
 			// Call the function to check a task by name
 			checkTaskByString(taskName)
+
+			fmt.Println("")
+			printFormatterTaskList()
+
 			return
 		}
 
@@ -44,35 +53,32 @@ to quickly create a Cobra application.`,
 
 		// Call the function to check a task by ID
 		checkTaskByID(taskID)
-		fmt.Printf("Task with ID %d marked as done.\n", taskID)
+		fmt.Println("")
+		printFormatterTaskList()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(checkCmd)
 
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// checkCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// checkCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
-	// checkCmd.PersistentFlags().String("task", "", "select a task by the name")
+	// here you init flags, look at the cobra cli doc to check how this work
 	checkCmd.Flags().StringP("task", "t", "", "check a task by his name")
 }
 
 func checkTaskByID(taskId int) {
 	records := getCsvData()
+	if len(records) == 0 || taskId > len(records) {
+		return
+	}
 	records[taskId-1].done = true
 	writeCsv(records)
 }
 
 func checkTaskByString(taskString string) {
 	records := getCsvData()
+	if len(records) == 0 {
+		return
+	}
 	for i, record := range records {
 		if record.task == taskString {
 			records[i].done = true
