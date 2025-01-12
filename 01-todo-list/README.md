@@ -1,5 +1,12 @@
 # Todo App
 
+## DONE
+
+download the repo, build the application and start to write your to do :D
+
+
+
+
 ## Goal
 
 Create an cli application for managing tasks in the terminal.
