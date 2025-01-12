@@ -5,10 +5,9 @@ package cmd
 
 import (
 	"fmt"
-	"io"
 	"os"
+	"strconv"
 	"text/tabwriter"
-	"time"
 
 	"github.com/mergestat/timediff"
 	"github.com/spf13/cobra"
@@ -53,41 +52,29 @@ func printFormatterTaskList() {
 	}
 
 	tabFilter := tabwriter.NewWriter(os.Stdout, maxLen+10, 8, 1, ' ', 0)
-	reader := createCsvReader(fileName)
 
-	isHeader := false
-	for {
-		if !isHeader {
-			fmt.Println()
-			header, err := reader.Read()
-			if err != nil {
-				fmt.Println("Error:", err)
-				os.Exit(1)
-			}
-			isHeader = true
-			fmt.Fprintln(tabFilter, header[0]+"\t"+header[1]+"\t"+header[2]+"\t"+header[3]+"\n")
-
+	for i, record := range getCsvData() {
+		// print the header
+		if i == 0 {
+			fmt.Fprintln(tabFilter, "ID"+"\t"+"TASK"+"\t"+"CREATED"+"\t"+"DONE")
 		}
 
-		record, err := reader.Read()
-		if err == io.EOF {
-			break
+		// compute the printable format for:
+		// ID
+		stringID := strconv.Itoa(record.id)
+
+		// time
+		timeDiff := timediff.TimeDiff(record.age)
+
+		// done field
+		stringDone := strconv.FormatBool(record.done)
+
+		if record.done {
+			// this allow for strikethrow with ascee code and some random space for formatting issue
+			fmt.Fprintln(tabFilter, "\033[9m"+stringID+"\t"+"    "+record.task+"\t"+"    "+timeDiff+"\t"+"    "+stringDone+"\033[0m")
+		} else {
+			fmt.Fprintln(tabFilter, stringID+"\t"+record.task+"\t"+timeDiff+"\t"+stringDone)
 		}
-
-		// dummy formatting, can be
-		id := record[0]
-		taskName := record[1]
-		isDone := record[3]
-
-		timeDate, err := time.Parse(time.RFC3339, record[2])
-		if err != nil {
-			fmt.Println("Error:", err)
-			os.Exit(1)
-		}
-		timeDiff := timediff.TimeDiff(timeDate)
-
-		fmt.Fprintln(tabFilter, id+"\t"+taskName+"\t"+timeDiff+"\t"+isDone)
-
-		tabFilter.Flush()
 	}
+	tabFilter.Flush()
 }
