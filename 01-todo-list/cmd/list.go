@@ -44,16 +44,18 @@ func init() {
 
 func printFormatterTaskList() {
 	var maxLen int
-	for _, task := range getTaskList() {
-		lenght := len(task)
+	records := getCsvData()
+
+	for _, record := range records {
+		lenght := len(record.task)
 		if lenght > maxLen {
 			maxLen = lenght
 		}
 	}
 
-	tabFilter := tabwriter.NewWriter(os.Stdout, maxLen+10, 8, 1, ' ', 0)
+	tabFilter := tabwriter.NewWriter(os.Stdout, maxLen+15, 10, 4, ' ', 0)
 
-	for i, record := range getCsvData() {
+	for i, record := range records {
 		// print the header
 		if i == 0 {
 			fmt.Fprintln(tabFilter, "ID"+"\t"+"TASK"+"\t"+"CREATED"+"\t"+"DONE")
