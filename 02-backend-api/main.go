@@ -24,8 +24,6 @@ func main() {
 	if err != nil {
 		log.Fatal("internal server error")
 	}
-
-	// router.Handle("/add", handler http.Handler)
 }
 
 func welcome(w http.ResponseWriter, r *http.Request) {
@@ -35,4 +33,16 @@ func welcome(w http.ResponseWriter, r *http.Request) {
 
 func addOperation(operand Operation) int {
 	return operand.Number1 + operand.Number2
+}
+
+func subtractionOperation(operand Operation) int {
+	return operand.Number1 - operand.Number2
+}
+
+func multiplicationOperation(operand Operation) int {
+	return operand.Number1 * operand.Number2
+}
+
+func divisionOperation(operand Operation) int {
+	return operand.Number1 / operand.Number2
 }
