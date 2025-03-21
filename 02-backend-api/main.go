@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -10,39 +8,26 @@ import (
 
 var logger *slog.Logger
 
-type Operation struct {
-	Number1 int `json:"number1"`
-	Number2 int `json:"number2"`
-}
-
 func main() {
-	logger := slog.New(slog.NewTextHandler(os.Stdout, nil))
+	logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
 	logger.Info("init server")
 
 	router := http.NewServeMux()
-	err := http.ListenAndServe("localhost:8080", router)
+
+	router.Handle("/welcome", applyMiddleware(welcome))
+	router.Handle("/add", applyMiddleware(add))
+	router.Handle("/subtract", applyMiddleware(subtract))
+	router.Handle("/multiply", applyMiddleware(multiply))
+	router.Handle("/divide", applyMiddleware(divide))
+
+	// #### start serving the request ####
+	err := http.ListenAndServe("localhost:8080", router) // questo e' il server http a cui passo il router per dire come gestire le chimate
 	if err != nil {
-		log.Fatal("internal server error")
+		logger.Error("internal server error on starting the multiplexer")
 	}
 }
 
 func welcome(w http.ResponseWriter, r *http.Request) {
-	logger.Info("received request at home endpoint", "method", r.Method, "url", r.URL)
-	fmt.Fprintf(w, "Hello, World!\n")
-}
-
-func addOperation(operand Operation) int {
-	return operand.Number1 + operand.Number2
-}
-
-func subtractionOperation(operand Operation) int {
-	return operand.Number1 - operand.Number2
-}
-
-func multiplicationOperation(operand Operation) int {
-	return operand.Number1 * operand.Number2
-}
-
-func divisionOperation(operand Operation) int {
-	return operand.Number1 / operand.Number2
+	w.Write([]byte("This is the about page."))
+	logger.Info("welcome to dummy server")
 }
