@@ -20,25 +20,25 @@ Inside of this repository are 5 directories, each representing a single project 
 Each of the project ideas contain a README and any supplementary resources or advice to help you build 
 the project.
 
-## 01 - Todo List CLI
+## 01 - Todo List CLI - DONE
 
 This project is to build a CLI todo list called `tasks`. There is my own built version you can try out
 on the releases page
 
-## 02 - Backend API
+## 02 - Backend API - WIP
 
 This project is to build a backend API for a Calculator Service. There is a simple OpenAPI Specification on this
 project to help you define the endpoints your API should support.
 
-## 03 - Web Scraper
+## 03 - Web Scraper - BLOCKED
 
 This project is to build a simple web scraper to detect dead links on a webpage.
 
-## 04 - URL Shortener
+## 04 - URL Shortener - BLOCKED 
 
 This project is to build a URL Shortener website entirely using Go, including both a Web frontend and a backend.
 
-## 05 - Currency Converter
+## 05 - Currency Converter - BLOCKED 
 
 This last project is to build a currency converter for the terminal which uses the huh framework for creating a form and a third part API for obtaining the currency conversion data.
 
