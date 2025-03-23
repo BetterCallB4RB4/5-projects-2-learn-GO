@@ -14,7 +14,6 @@ func main() {
 
 	router := http.NewServeMux()
 
-	router.Handle("/welcome", applyMiddleware(welcome))
 	router.Handle("/add", applyMiddleware(add))
 	router.Handle("/subtract", applyMiddleware(subtract))
 	router.Handle("/multiply", applyMiddleware(multiply))
@@ -25,9 +24,4 @@ func main() {
 	if err != nil {
 		logger.Error("internal server error on starting the multiplexer")
 	}
-}
-
-func welcome(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("This is the about page."))
-	logger.Info("welcome to dummy server")
 }
