@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	// "golang.org/x/time/rate"
 )
 
 type Middleware func(http.Handler) http.Handler
@@ -14,6 +15,22 @@ func applyMiddleware(handlerFunction http.HandlerFunc) http.Handler {
 	handler := http.HandlerFunc(handlerFunction)
 	return chain(handler, loggingMiddleware, inputValidation)
 }
+
+// TODO: install the library with go get golang.org/x/time/rate in the root directory ot the project
+//
+// func rateLimiter(limit rate.Limit, burst int) func(http.Handler) http.Handler {
+//         limiter := rate.NewLimiter(limit, burst)
+//
+//         return func(next http.Handler) http.Handler {
+//                 return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//                         if !limiter.Allow() {
+//                                 http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
+//                                 return
+//                         }
+//                         next.ServeHTTP(w, r)
+//                 })
+//         }
+// }
 
 func chain(handler http.Handler, middlewares ...Middleware) http.Handler {
 	for _, middleware := range middlewares {
