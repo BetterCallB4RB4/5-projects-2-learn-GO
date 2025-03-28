@@ -13,7 +13,7 @@ type Middleware func(http.Handler) http.Handler
 
 func applyMiddleware(handlerFunction http.HandlerFunc) http.Handler {
 	handler := http.HandlerFunc(handlerFunction)
-	return chain(handler, loggingMiddleware, inputValidation)
+	return chain(handler, loggingMiddleware, inputValidation, tokenValidation)
 }
 
 // TODO: install the library with go get golang.org/x/time/rate in the root directory ot the project
@@ -97,6 +97,18 @@ func inputValidation(next http.Handler) http.Handler {
 		}
 
 		if processRequest {
+			next.ServeHTTP(w, r)
+		}
+	})
+}
+
+func tokenValidation(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
+		if token == "" || !authenticate(token) {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		} else {
+			logger.Warn("protected resources accessed")
 			next.ServeHTTP(w, r)
 		}
 	})

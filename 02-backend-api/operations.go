@@ -42,6 +42,13 @@ func divide(w http.ResponseWriter, r *http.Request) {
 	w.Write(formatResponse(result))
 }
 
+func module(w http.ResponseWriter, r *http.Request) {
+	numbers := formatRequest(r)
+	result := numbers.Number1 % numbers.Number2
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(formatResponse(result))
+}
+
 func formatRequest(r *http.Request) Operation {
 	var numbers Operation
 	err := json.NewDecoder(r.Body).Decode(&numbers)

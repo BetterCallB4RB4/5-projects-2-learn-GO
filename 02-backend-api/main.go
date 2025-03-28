@@ -14,10 +14,13 @@ func main() {
 
 	router := http.NewServeMux()
 
+	router.HandleFunc("/login", loginHandler)
+
 	router.Handle("/add", applyMiddleware(add))
 	router.Handle("/subtract", applyMiddleware(subtract))
 	router.Handle("/multiply", applyMiddleware(multiply))
 	router.Handle("/divide", applyMiddleware(divide))
+	router.Handle("/module", applyMiddleware(module))
 
 	// #### start serving the request ####
 	err := http.ListenAndServe("localhost:8080", router) // questo e' il server http a cui passo il router per dire come gestire le chimate
