@@ -4,33 +4,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"io"
+	"net"
 	"net/http"
 	"strconv"
-	// "golang.org/x/time/rate"
 )
 
 type Middleware func(http.Handler) http.Handler
 
 func applyMiddleware(handlerFunction http.HandlerFunc) http.Handler {
 	handler := http.HandlerFunc(handlerFunction)
-	return chain(handler, loggingMiddleware, inputValidation, tokenValidation)
+	return chain(handler, rateLimiterMiddleWare, loggingMiddleware, inputValidation, tokenValidation)
 }
-
-// TODO: install the library with go get golang.org/x/time/rate in the root directory ot the project
-//
-// func rateLimiter(limit rate.Limit, burst int) func(http.Handler) http.Handler {
-//         limiter := rate.NewLimiter(limit, burst)
-//
-//         return func(next http.Handler) http.Handler {
-//                 return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//                         if !limiter.Allow() {
-//                                 http.Error(w, "Too Many Requests", http.StatusTooManyRequests)
-//                                 return
-//                         }
-//                         next.ServeHTTP(w, r)
-//                 })
-//         }
-// }
 
 func chain(handler http.Handler, middlewares ...Middleware) http.Handler {
 	for _, middleware := range middlewares {
@@ -110,6 +94,23 @@ func tokenValidation(next http.Handler) http.Handler {
 		} else {
 			logger.Warn("protected resources accessed")
 			next.ServeHTTP(w, r)
+		}
+	})
+}
+
+func rateLimiterMiddleWare(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ip, _, err := net.SplitHostPort(r.RemoteAddr)
+		if err != nil {
+			http.Error(w, "Your Ip is rate blocked wait for access this resource", http.StatusInternalServerError)
+			return
+		}
+
+		limiter := ipRateLimiter.getLimiter(ip)
+		if limiter.Allow() {
+			next.ServeHTTP(w, r)
+		} else {
+			http.Error(w, "Rate Limit Exceeded", http.StatusTooManyRequests)
 		}
 	})
 }
