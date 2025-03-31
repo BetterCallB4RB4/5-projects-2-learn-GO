@@ -6,11 +6,16 @@ import (
 	"os"
 )
 
-var logger *slog.Logger
+var (
+	logger        *slog.Logger
+	ipRateLimiter *IPRateLimiter
+)
 
 func main() {
 	logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
 	logger.Info("init server")
+
+	ipRateLimiter = newIPlimiter()
 
 	router := http.NewServeMux()
 
