@@ -63,3 +63,17 @@ You can access my implementation of this API at [https://calculator.dreamsofcode
 - Add in token authentication to prevent anyone unauthorized from using the API - DONE
 - Add in a database to keep track of all of the calculations that have taken place
 - Add in a middleware that adds a check on the input formatting - DONE 
+
+# example command to test the API
+start server
+```go
+go run .
+```
+call the server
+```bash
+curl -H "Content-Type: application/json" -H "Authorization: $(curl -H "Content-Type: application/json" -d '{"number1": 10, "number2": 5}' http://localhost:8080/login | jq ".token" -r)" -d '{"number1": 10, "number2": 5}' http://localhost:8080/add
+```
+ask the database
+```sql
+SELECT * FROM operation;
+```
