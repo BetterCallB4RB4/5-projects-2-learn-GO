@@ -13,7 +13,14 @@ type Middleware func(http.Handler) http.Handler
 
 func applyMiddleware(handlerFunction http.HandlerFunc) http.Handler {
 	handler := http.HandlerFunc(handlerFunction)
-	return chain(handler, rateLimiterMiddleWare, loggingMiddleware, inputValidation, tokenValidation)
+	return chain(
+		handler,
+		rateLimiterMiddleWare,
+		loggingMiddleware,
+		inputValidation,
+		tokenValidation,
+		recordOperationDB,
+	)
 }
 
 func chain(handler http.Handler, middlewares ...Middleware) http.Handler {
@@ -112,5 +119,32 @@ func rateLimiterMiddleWare(next http.Handler) http.Handler {
 		} else {
 			http.Error(w, "Rate Limit Exceeded", http.StatusTooManyRequests)
 		}
+	})
+}
+
+func recordOperationDB(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// get api uri and clean the string
+		path := r.URL.Path
+		operation := path[1:]
+
+		// restore the message body for other middleware or handler function
+		bodyBytes, err := io.ReadAll(r.Body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			logger.Error("Error reading request body", "error", err)
+		}
+		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
+		// get the numbers from the body
+		var numbers Operation
+		err = json.Unmarshal(bodyBytes, &numbers)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			logger.Error("couldn't read the request body, cannot perform any operation")
+		}
+
+		insertOperationData(numbers, operation)
+		next.ServeHTTP(w, r)
 	})
 }
