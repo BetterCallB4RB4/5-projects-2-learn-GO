@@ -64,3 +64,5 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // curl -H "Content-Type: application/json" -H "Authorization: $(curl -H "Content-Type: application/json" -d '{"number1": 10, "number2": 5}' http://localhost:8080/login | jq ".token" -r)" -d '{"number1": 10, "number2": 5}' http://localhost:8080/add
+// curl -H "Content-Type: application/json" http://localhost:8080/login | jq ".token" -r
+// curl -H "Content-Type: application/json" -H "Authorization: <TOKEN>" -d '{"number1": 10, "number2": 5}' http://localhost:8080/add
