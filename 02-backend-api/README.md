@@ -72,8 +72,21 @@ go run .
 call the server
 ```bash
 curl -H "Content-Type: application/json" -H "Authorization: $(curl -H "Content-Type: application/json" -d '{"number1": 10, "number2": 5}' http://localhost:8080/login | jq ".token" -r)" -d '{"number1": 10, "number2": 5}' http://localhost:8080/add
+curl -H "Content-Type: application/json" http://localhost:8080/login | jq ".token" -r
+curl -H "Content-Type: application/json" -H "Authorization: <TOKEN>" -d '{"number1": 10, "number2": 5}' http://localhost:8080/add
+
 ```
 ask the database
 ```sql
 SELECT * FROM operation;
+```
+
+# use a http client (postman)
+you can import the api spec in post man, make the login call and after take the auth token e use it in the header of the next call
+check if the body is correct in order to respet this 
+```json
+{
+  "number1": 10,
+  "number2": 5
+}
 ```
