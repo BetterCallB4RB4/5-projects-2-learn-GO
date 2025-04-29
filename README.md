@@ -30,7 +30,7 @@ on the releases page
 This project is to build a backend API for a Calculator Service. There is a simple OpenAPI Specification on this
 project to help you define the endpoints your API should support.
 
-## 03 - Web Scraper - BLOCKED
+## 03 - Web Scraper - WIP
 
 This project is to build a simple web scraper to detect dead links on a webpage.
 
