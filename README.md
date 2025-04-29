@@ -25,7 +25,7 @@ the project.
 This project is to build a CLI todo list called `tasks`. There is my own built version you can try out
 on the releases page
 
-## 02 - Backend API - WIP
+## 02 - Backend API - DONE
 
 This project is to build a backend API for a Calculator Service. There is a simple OpenAPI Specification on this
 project to help you define the endpoints your API should support.
