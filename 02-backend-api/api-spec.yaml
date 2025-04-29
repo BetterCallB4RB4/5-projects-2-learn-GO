@@ -1,0 +1,123 @@
+openapi: 3.0.0
+info:
+  title: Calculator API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+
+components:
+  securitySchemes:
+    ApiTokenAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+
+security:
+  - ApiTokenAuth: []
+
+paths:
+  /login:
+    post:
+      summary: Login and receive a token
+      security: []  # No auth required
+
+  /add:
+    post:
+      summary: Add two numbers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number1:
+                  type: number
+                  format: int
+                number2:
+                  type: number
+                  format: int
+            examples:
+              default:
+                value:
+                  number1: 10
+                  number2: 5
+      responses:
+        "200":
+          description: Successfully added two numbers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: number
+                    format: int
+
+  /subtract:
+    post:
+      summary: Subtract two numbers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number1:
+                  type: number
+                  format: int
+                number2:
+                  type: number
+                  format: int
+            examples:
+              default:
+                value:
+                  number1: 10
+                  number2: 5
+
+  /multiply:
+    post:
+      summary: Multiply two numbers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number1:
+                  type: number
+                  format: int
+                number2:
+                  type: number
+                  format: int
+            examples:
+              default:
+                value:
+                  number1: 10
+                  number2: 5
+
+  /divide:
+    post:
+      summary: Divide two numbers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                number1:
+                  type: number
+                  format: int
+                number2:
+                  type: number
+                  format: int
+            examples:
+              default:
+                value:
+                  number1: 10
+                  number2: 5
+
+
