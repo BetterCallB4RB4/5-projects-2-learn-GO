@@ -1,11 +1,32 @@
-# Start with a lightweight base image
-FROM alpine:latest
- 
-# Install SQLite
-RUN apk update && apk add sqlite
- 
-# Set the default working directory
-WORKDIR /db
- 
-# Set the default command to open SQLite
-CMD ["sqlite3"]
+# --- Build Stage ---
+FROM docker.io/library/golang:1.24.1 AS builder
+
+# Enable CGO
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+RUN apt-get update && apt-get install -y gcc sqlite3 libsqlite3-dev
+
+WORKDIR /app
+
+COPY go.mod ./
+COPY . ./
+
+RUN go build -o calculator-api
+
+# --- Runtime Stage ---
+FROM debian:bookworm-slim
+
+RUN apt-get update && apt-get install -y \
+    libsqlite3-0 \
+ && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+COPY --from=builder /app/calculator-api /app/
+COPY --from=builder /app/data /app/data
+
+EXPOSE 8080
+
+CMD ["/app/calculator-api"]
