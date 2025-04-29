@@ -30,7 +30,7 @@ func main() {
 	router.Handle("/module", applyMiddleware(module))
 
 	// #### start serving the request ####
-	err := http.ListenAndServe("localhost:8080", router) // questo e' il server http a cui passo il router per dire come gestire le chimate
+	err := http.ListenAndServe("0.0.0.0:8080", router) // questo e' il server http a cui passo il router per dire come gestire le chimate
 	if err != nil {
 		logger.Error("internal server error on starting the multiplexer")
 	}
